@@ -1,19 +1,17 @@
-<?php	##################
-	#
-	#	rah_metas-plugin for Textpattern
-	#	version 1.5
-	#	by Jukka Svahn
-	#	http://rahforum.biz
-	#
-	#	Copyright (C) 2011 Jukka Svahn <http://rahforum.biz>
-	#	Licensed under GNU Genral Public License version 2
-	#	http://www.gnu.org/licenses/gpl-2.0.html
-	#
-	###################
+<?php
 
 /**
-	The tag, output meta tags
-*/
+ * Rah_metas plugin for Textpattern CMS
+ *
+ * @author Jukka Svahn
+ * @date 2007-
+ * @license GNU GPLv2
+ * @link http://rahforum.biz/plugins/rah_metas
+ *
+ * Copyright (C) 2012 Jukka Svahn <http://rahforum.biz>
+ * Licensed under GNU Genral Public License version 2
+ * http://www.gnu.org/licenses/gpl-2.0.html
+ */
 
 	function rah_metas($atts=array()) {
 		global $is_article_list, $thisarticle;
@@ -98,11 +96,11 @@
 
 class rah_metas_pkg {
 	
-/**
-	Builds keywords
-	@param $atts array Tag attributes.
-	@return string List of keywords.
-*/
+	/**
+	 * Builds keywords
+	 * @param array $atts Tag attributes.
+	 * @return string List of keywords.
+	 */
 
 	public function keywords($atts) {
 		extract($atts);
@@ -137,11 +135,11 @@ class rah_metas_pkg {
 		return $content;
 	}
 
-/**
-	Builds description
-	@param $atts array Tag attributes.
-	@return string Meta description.
-*/
+	/**
+	 * Builds description
+	 * @param array $atts Tag attributes.
+	 * @return string Meta description.
+	 */
 
 	public function description($atts) {
 		extract($atts);
@@ -186,13 +184,13 @@ class rah_metas_pkg {
 		return $content;
 	}
 	
-/**
-	Gets the content from $thisarticle global variable
-	@param $string string Property to search for.
-	@param $replacement bool Whether fallback is used or not.
-	@param $default string Default if requested property isn't found.
-	@return mixed Either the $default, or requested content.
-*/
+	/**
+	 * Gets the content from $thisarticle global variable
+	 * @param string $string Property to search for.
+	 * @param bool $replacement Whether fallback is used or not.
+	 * @param string $default Default if requested property isn't found.
+	 * @return mixed Either the $default, or requested content.
+	 */
 
 	protected function content($string,$replacement,$default) {
 		global $thisarticle;
@@ -213,11 +211,11 @@ class rah_metas_pkg {
 			return $default;
 	}
 
-/**
-	Removes trail (&#8230;) from the end of the string
-	@param $out string String to check and clean.
-	@return string
-*/
+	/**
+	 * Removes trail (&#8230;) from the end of the string
+	 * @param string $out String to check and clean.
+	 * @return string
+	 */
 
 	protected function trail($out) {
 		$content = implode(' ',$out);
@@ -228,11 +226,11 @@ class rah_metas_pkg {
 		return $content;
 	}
 
-/**
-	Parses TXP markup, and strips valid HTML, invalid code, exceeding whitespace and line breaks.
-	@param $out string String to clean.
-	@return string
-*/
+	/**
+	 * Parses TXP markup, and strips valid HTML, invalid code, exceeding whitespace and line breaks.
+	 * @param string $out String to clean.
+	 * @return string
+	 */
 
 	protected function strip($out) {
 		return 
