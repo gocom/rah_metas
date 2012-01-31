@@ -1,15 +1,22 @@
 <?php	##################
 	#
 	#	rah_metas-plugin for Textpattern
-	#	version 1.4
+	#	version 1.5
 	#	by Jukka Svahn
 	#	http://rahforum.biz
 	#
+	#	Copyright (C) 2011 Jukka Svahn <http://rahforum.biz>
+	#	Licensed under GNU Genral Public License version 2
+	#	http://www.gnu.org/licenses/gpl-2.0.html
+	#
 	###################
 
+/**
+	The tag, output meta tags
+*/
+
 	function rah_metas($atts=array()) {
-		
-		global $is_article_list,$thisarticle;
+		global $is_article_list, $thisarticle;
 		
 		$atts = 
 			lAtts(array(
@@ -25,12 +32,12 @@
 				'maxchars' => '250',
 				'words' => '25',
 				'author' => '',
-				'useauthor' => '',
+				'useauthor' => 0,
 				'robots' => '',
 				'imagetoolbar' => '',
 				'copyright' => '',
 				'language' => '',
-				'messy_to_clean_redirect' => '',
+				'messy_to_clean_redirect' => 0,
 				'redirect_code' => '301',
 				'relnext' => '',
 				'relprev' => '',
@@ -40,12 +47,11 @@
 		;
 
 		extract($atts);
-		
-		$out = array();
-		
-		$author = ($useauthor && !empty($thisarticle)) ? author(array()) : $author;
-		$description = rah_metas_description($atts);
-		$keywords = rah_metas_keywords($atts);
+
+		$r = new rah_metas_pkg();
+		$author = $useauthor && !empty($thisarticle) ? author(array()) : $author;
+		$description = $r->description($atts);
+		$keywords = $r->keywords($atts);
 		
 		if($is_article_list == true) {
 			if($relprev)
@@ -58,7 +64,9 @@
 			if($relnext)
 				$next_url = link_to_next(array(),false);
 		}
-		
+
+		$out = array();
+
 		if($imagetoolbar)
 			$out[] = '<meta http-equiv="imagetoolbar" content="'.$imagetoolbar.'" />';
 		if($language)
@@ -84,29 +92,33 @@
 			elseif(is_numeric(gps('id'))) 
 				header('Location: '.permlink(array('id' => gps('id'))),TRUE,$redirect_code);
 		}
-		
+
 		return implode(n,$out);
 	}
 
+class rah_metas_pkg {
+	
 /**
 	Builds keywords
+	@param $atts array Tag attributes.
+	@return string List of keywords.
 */
 
-	function rah_metas_keywords($atts) {
+	public function keywords($atts) {
 		extract($atts);
 		
 		$out = array();
 		$count = 0;
 		
 		$content = 
-			rah_metas_content(
+			$this->content(
 				$keywords_from,
 				$keywords_replacement,
 				$keywords
 			);
 		
 		if($content) {
-			$content = rah_metas_strip($content);
+			$content = $this->strip($content);
 			$keywords = explode(',',$content);
 			$keywords = array_unique($keywords);
 			
@@ -127,22 +139,33 @@
 
 /**
 	Builds description
+	@param $atts array Tag attributes.
+	@return string Meta description.
 */
 
-	function rah_metas_description($atts) {
+	public function description($atts) {
 		extract($atts);
 
 		$content = 
-			rah_metas_content(
+			$this->content(
 				$description_from,
 				$description_replacement,
 				$description
 			);
 		
 		if($content) {
-			if($escape) 
-				$content = rah_metas_textile($content);
-			$content = rah_metas_strip($content);
+			
+			/*
+				Escape Textile
+			*/
+			
+			if($escape) {
+				@include_once txpath.'/lib/classTextile.php';
+				$textile = new Textile();
+				$content = $textile->TextileThis($content);
+			}
+			
+			$content = $this->strip($content);
 			$word = array();
 			$count_char = 0;
 			$count_word = 0;
@@ -154,7 +177,7 @@
 				if($count_char <= $maxchars && $count_word <= $words)
 					$word[] = $token;
 				else 
-					return rah_metas_trail($word).$description_trail;
+					return $this->trail($word).$description_trail;
 				$count_char = strlen($token)+$count_char+1;
 				$count_word++;
 			}
@@ -162,21 +185,23 @@
 		}
 		return $content;
 	}
-
+	
 /**
-	Gets the content from @$thisarticle
+	Gets the content from $thisarticle global variable
+	@param $string string Property to search for.
+	@param $replacement bool Whether fallback is used or not.
+	@param $default string Default if requested property isn't found.
+	@return mixed Either the $default, or requested content.
 */
 
-	function rah_metas_content($string,$replacement,$default) {
+	protected function content($string,$replacement,$default) {
 		global $thisarticle;
 		
 		if(empty($thisarticle) || empty($string))
 			return $default;
 		
 		$string = strtolower($string);
-		
-		$array = 
-			explode(',',$string);
+		$array = explode(',',$string);
 		
 		foreach($array as $field) {
 			$field = trim($field);
@@ -190,9 +215,11 @@
 
 /**
 	Removes trail (&#8230;) from the end of the string
+	@param $out string String to check and clean.
+	@return string
 */
 
-	function rah_metas_trail($out) {
+	protected function trail($out) {
 		$content = implode(' ',$out);
 		if(
 			substr($content, -7, 7) == '&#8230;'
@@ -203,9 +230,11 @@
 
 /**
 	Parses TXP markup, and strips valid HTML, invalid code, exceeding whitespace and line breaks.
+	@param $out string String to clean.
+	@return string
 */
 
-	function rah_metas_strip($out) {
+	protected function strip($out) {
 		return 
 			trim(
 				str_replace(
@@ -218,13 +247,6 @@
 			)
 		;
 	}
+}
 
-/**
-	Textiles
-*/
-
-	function rah_metas_textile($out) {
-		@include_once(txpath.'/lib/classTextile.php');
-		$textile = new Textile();
-		return $textile->TextileThis($out);
-	}
+?>

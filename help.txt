@@ -2,8 +2,8 @@ h1. rah_metas
 
 p. A tiny <abbr title="Search engine optimization">SEO</abbr>- and meta-tool for "Textpattern CMS.":http://www.textpattern.com Build descriptions, simple meta info, rel links and prevent double content.
 
-* Version: 1.4
-* Updated: 2010/10/19 5:00 AM UTC
+* Version: 1.5
+* Updated: 2011/10/29 11:20 PM UTC
 
 h3. Table of Contents
 
@@ -32,13 +32,13 @@ h3(#requirements). Requirements
 
 p. Minimum requirements:
 
-* PHP 4.4.0+
+* PHP 5+
 * Textpattern 4.0.4+
 
 p. Recommended:
 
 * PHP 5.1.2+
-* Textpattern 4.0.8+
+* Textpattern 4.4.1+
 
 h3(#installation-and-usage). Installation and usage
 
@@ -48,70 +48,70 @@ p. For usage, basically just put @<txp:rah_metas />@-tag with wanted attributes 
 
 h3(#attributes). Attributes
 
-p. The tag is @<txp:rah_metas />@ and attributes for it follow. Default value @""@ means that the attribute is unset and defaultly non-used.
+p. The tag is @<txp:rah_metas />@ and attributes for it follow. Default value @""@ means that the attribute is unset and by default not used.
 
 p. *imagetoolbar*
-To block an browser's imagetoolbar. Allowed attributes @true@ or @false@.
+To block an browser's image toolbar. Allowed attributes are @true@ and @false@. By default not used.
 Example: @imagetoolbar="false"@ Default: @""@
 
 p. *language*
-Language used by the site, in example: @fi, en, de, se@.
+The language used by the site. Value should be a language code, for example @en@, @de@, @it@ or @se@.
 Example: @language="en"@ Default: @""@
 
 p. *robots*
-How should robots navigate. Valid values are @index, noindex, follow, nofollow@ that can be compined.
+Directs how robots should navigate on the page. Valid values include @index@, @noindex@, @follow@, @nofollow@. The values can be combined.
 Example: @robots="index, follow"@ Default: @""@
 
 p. *author*
-Author name that you wan't to show as page's author. Usually you, company or the website's name.
+Author name that you want to show as the page's author. Usually you, company or the website's name. This value is used as the fallback when @useauthor@ is used, but no author is available.
 Example: @author="John Doe"@ Default: @""@
 
 p. *useauthor*
-If selected and filled, @<txp:author />@ is used for the author-meta, and @author@-attribute will be overrided, when viewing an induvidual article.
-Example: @useauthor="1"@ Default: @""@
+If set to @1@, @<txp:author />@ is used to populate author metadata when possible. The value set with @author@ attribute will be used as a fallback in list context and such.
+Example: @useauthor="1"@ Default: @"0"@
 
 p. *copyright*
-Outputs copyright-meta. Used for the content.
+Outputs copyright meta. Value is used as the content.
 Example: @copyright="Copyrihts &copy; 2007 John Doe"@ Default: @""@
 
 h4. Description related attributes
 
 p. *description*
-A default meta description that will be used in article list context, or if there isn't an article description to show and @description_replacement@ is set on.
+A default meta description that will be shown in list context, or when there isn't an article description to show and @description_replacement@ is set on.
 Example: @description="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Fusce at dui eget est congue aliquet. Quisque sed nunc"@ Default: @""@
 
 p. *description_from*
-Which field is used for the automatic meta description. The attribute takes comma separated list of fields. The first field in the list that isn't empty is used as the meta description. Available values: @body@, @excerpt@ or @custom field's name@. If the attribute is empty, then automatic description isn't used.
+Which artile field is used for the automatic meta description. The attribute takes comma separated list of fields. The first field in the list that isn't empty is used as the meta description. Available values: @body@, @excerpt@ or custom field's name. If set empty, the automatic description isn't used.
 Example: @description_from="body,excerpt,metadescription"@  Default: @"body,excerpt"@
 
 p. *words*
-Limits the amount of words that are shown in the automatic meta description.
+Limits the amount of words shown in the automatic meta description.
 Example: @words="15"@ Default: @"25"@
 
 p. *maxchars*
-The maximum number of characters in the generated automatic meta description.
+The maximum number of characters used in the generated automatic meta description.
 Example: @maxchars="170"@ Default: @"250"@
 
 p. *description_trail*
-Ending trail used in the end of the automatic metadescription. Trail is only shown if the description is longer than the limit set by @maxchars@ and @words@.
+Ending trail used in the end of the automatic metadescription. Trail is only shown if the description is longer than the limit set by @maxchars@ and/or @words@.
 Example: @description_trail=""@ Default:  @"&hellip;"@
 
 p. *description_replacement*
-If set on (@1@) and there isn't automatic description available, use @description@ attribute instead. By default this feature is not used.
+If set on (@1@) and there isn't automatic description available, @description@ attribute is used as the description instead. By default this feature is not used.
 Example: @description_replacement="1"@ Default: @""@
 
 p. *escape*
-If set to @1@, will escape raw Textile from description. Default is unset, and the feature is not used. Usually this feature isn't required, but it might be good if you have description in a custom field and you are using Textile there. Textile in custom fields isn't by default genenrated by Textpattern.
+If set to @1@, will remove raw Textile markup from the description. By default the attribute is unset, and the feature is not used. Usually this feature isn't required, but it might be good if you are supplying the description in a custom field and you are using Textile there. Textile in custom fields isn't, by default, parsed by Textpattern.
 Example: @escape="1"@ Default: @""@
 
 h4. Keyword related attributes
 
 p. *keywords*
-Default keywords that will be used as keyword meta in article list context, or if there isn't any keywords defined for article and @keywords_replacement@ attribute is set on.
+Default keywords that will be used as keyword meta in a list context, or when there isn't any keywords set for an article and @keywords_replacement@ attribute is set on.
 Example: @keywords="life, Doe, cat, dog"@ Default: @""@
 
 p. *keywords_from*
-Which field is used for the keyword meta. The attribute takes comma separated list of fields. The first field in the list that isn't empty is used as the keywords. Available values, any article field: @keywords@, @body@, @excerpt@ or @custom field's name@. If empty, the feature isn't used.
+Which field is used for the keyword meta. The attribute takes comma separated list of fields. The first field in the list that isn't empty is used as the keywords. Available values, any article field: @keywords@, @body@, @excerpt@ or custom field's name. If empty, the feature isn't used.
 Example: @keywords_from="keywords,excerpt"@  Default: @"keywords"@
 
 p. *keywords_replacement*
@@ -119,7 +119,7 @@ If there isn't keywords available for an article, use default defined in @keywor
 Example: @keywords_replacement="1"@ Default: @""@
 
 p. *keywords_limit*
-Limits the words used in the keywords. Takes even number.
+Limits the words used in the keywords. Takes a number.
 Example: @keywords_limit="5"@ Default: @"25"@
 
 h4. Redirect related attributes
@@ -156,7 +156,7 @@ p. *#1: Basic usage*
 
 bc. <txp:rah_metas keywords="dog, cat, house" description="Lorem lipsum" maxchars="170" words="15" />
 
-p. *#2: Using content preferring.* First look at the custom field, then main (excerpt, body) fields.
+p. *#2: Using content preferring.* First look at the custom field, then main article (excerpt, body) fields.
 
 bc. <txp:rah_metas description_from="MyCustomFieldName,excerpt,body" />
 
@@ -177,6 +177,12 @@ bc. <txp:rah_metas description="" description_from="" />
 p. If @description@ and @description_from@ are set empty, no description will be generated. Same applies to keywords (see @keywords@ and @keywords_from@ attributes).
 
 h3(#changelog). Changelog
+
+p. *Version 1.5*
+
+* Wrapped set of extra functions into a class, and removed the prefixing from the new methods.
+* Added comments, cleaned up some code.
+* Removed @rah_metas_textile()@ function.
 
 p. *Version 1.4*
 
