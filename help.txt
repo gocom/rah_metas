@@ -2,8 +2,8 @@ h1. rah_metas
 
 p. A tiny <abbr title="Search engine optimization">SEO</abbr>- and meta-tool for "Textpattern CMS.":http://www.textpattern.com Build descriptions, simple meta info, rel links and prevent double content.
 
-* Version: 1.1
-* Updated: 2009/10/08 2:00 PM GMT+3
+* Version: 1.2
+* Updated: 2010/05/15 6:30 PM UTC
 
 h3. Table of Contents
 
@@ -161,17 +161,28 @@ p. *#1: Basic usage*
 
 bc. <txp:rah_metas keywords="dog, cat, house" description="Lorem lipsum" maxchars="170" words="15" />
 
-p. *#2: Using content preferring.* First look at custom field, then main (excerpt, body) fields.
+p. *#2: Using content preferring.* First look at the custom field, then main (excerpt, body) fields.
 
 bc. <txp:rah_metas description_from="MyCustomFieldName" prefercontent="1" />
 
-p. *#3: Tags-in-tags example.* Pull data from space.
+p. *#3: Use rah_metas tag inside "article_custom":http://textpattern.net/wiki/index.php?title=article_custom block*
 
-bc. <txp:rah_metas keywords='<txp:article><txp:keywords /></txp:article>' description='<txp:article_custom id="1" status="5"><txp:body /></txp:article>' />
+p. If rah_metas is placed directly inside article_custom (or article) tag, it can be used to pull the meta data from specific article.
+
+bc. <txp:article_custom id="5">
+	<txp:rah_metas />
+</txp:article_custom>
+
+In the code above, we took the meta data from the article where the ID is 5.
 
 h3(#changelog). Changelog
 
-h4. Main 1.0-series, "Stupido Rattle"
+p. *Version 1.2*
+
+* Now the @<txp:rah_metas/>@ tag can be also used _directly inside_ @<txp:article_custom/>@ and @<txp:article/>@ blocks. That means that the tag now works in article lists. You just have to point it to the article. See example number 3.
+* Now _any_ article field can be used in @description_from@ and @keywords_from@ attributes. Even title, authorid, override_form or status.
+* Now dublicate keyword "uniqueing" is done with @array_unique()@.
+* Fixed keywords code escaping.
 
 p. *Version 1.1*
 
@@ -213,7 +224,7 @@ p. *Version 1.0.1*
 
 p. *Version 1.0*
 
-* Improved documention.
+* Improved documentation.
 * Little speed improvement.
 * Removed @charset@-attribute, it ain't needed as Textpattern sends charset via headers - and it must not differ.
 * Merged @customfieldexcerpt@-attribute with @description_from@.
@@ -228,8 +239,6 @@ p. *Version 1.0*
 * Added invalid charasters removing for custom fields.
 * Removed Textile removing from body and excerpt, that was meant to remove Textile + XHTML bugs caused by user's invalid article code, and used instead body_html, and just stripped HTML: it's faster.
 * Some users wanted to be able input invalid characters to description: now it is possible, if you turn Textile off: why should we validate meta description, if article's body itself is invalid, because writer doesn't use valid HTML special characters.
-
-h4. Beta-series
 
 p. *Version minor 0.9.2*
 

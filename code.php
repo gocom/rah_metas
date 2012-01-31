@@ -1,7 +1,7 @@
 <?php	##################
 	#
 	#	rah_metas-plugin for Textpattern
-	#	version 1.1
+	#	version 1.2
 	#	by Jukka Svahn
 	#	http://rahforum.biz
 	#
@@ -9,11 +9,14 @@
 
 	function rah_metas($atts=array()) {
 		extract(lAtts(rah_metas_atts(),$atts));
-		global $is_article_list;
+
+		global $is_article_list,$thisarticle;
 		$out = array();
-		$author = ($useauthor && $is_article_list == false) ? author(array()) : $author;
+		
+		$author = ($useauthor && !empty($thisarticle)) ? author(array()) : $author;
 		$description = rah_metas_description($atts);
 		$keywords = rah_metas_keywords($atts);
+		
 		if($is_article_list == true) {
 			if($relprev) $prev_url = older(array(),false);
 			if($relnext) $next_url = newer(array(),false);
@@ -21,16 +24,19 @@
 			if($relprev) $prev_url = link_to_prev(array(),false);
 			if($relnext) $next_url = link_to_next(array(),false);
 		}
+		
 		if($imagetoolbar)
 			$out[] = '<meta http-equiv="imagetoolbar" content="'.$imagetoolbar.'" />';
 		if($language)
 			$out[] = '<meta http-equiv="content-language" content="'.$language.'" />';
-		if($author)
-			$out[] = '<meta name="author" content="'.$author.'" />';
+		
 		if($copyright) 
 			$out[] = '<meta name="copyright" content="'.$copyright.'" />';
 		if($robots) 
 			$out[] = '<meta name="robots" content="'.$robots.'" />';
+		if($author)
+			$out[] = '<meta name="author" content="'.$author.'" />';
+		
 		if($keywords) 
 			$out[] = '<meta name="keywords" content="'.$keywords.'" />';
 		if($description)
@@ -39,12 +45,14 @@
 			$out[] = '<link rel="prev" href="'.$prev_url.'" title="'.$relprev.'" />';
 		if($next_url)
 			$out[] = '<link rel="next" href="'.$next_url.'" title="'.$relnext.'" />';
+		
 		if($messy_to_clean_redirect) {
 			if(gps('s')) 
 				header('Location: '.pagelinkurl(array('s' => gps('s'))),TRUE,$redirect_code);
 			if(is_numeric(gps('id'))) 
 				header('Location: '.permlink(array('id' => gps('id'))),TRUE,$redirect_code);
 		}
+		
 		return implode(n,$out);
 	}
 
@@ -81,40 +89,41 @@
 
 	function rah_metas_keywords($atts) {
 		extract(lAtts(rah_metas_atts(),$atts));
-		global $is_article_list;
+		
+		global $thisarticle;
+		
 		$content = '';
 		$out = array();
 		$count = 0;
-		if($is_article_list == true)
+		
+		if(empty($thisarticle))
 			$content = $keywords;
+
 		if(
-			$keywords_from && 
-			$is_article_list == false
+			!empty($thisarticle) && $keywords_from
 		) {
-			if($keywords_from == 'keywords')
-				$content = 
-					keywords(array());
-			else 
-				$content = 
-					custom_field(array('name' => $keywords_from,'escape' => 'html','default' => ''));
-			if(
-				!$content && 
-				$keywords_replacement
-			) 
+			if(isset($thisarticle[$keywords_from]))
+				$content = $thisarticle[$keywords_from];
+			
+			if(!$content && $keywords_replacement) 
 				$content = $keywords;
 		}
+		
 		if($content) {
-			$countent = rah_metas_strip($content);
+			$content = rah_metas_strip($content);
 			$keywords = explode(',',$content);
+			$keywords = array_unique($keywords);
+			
 			foreach($keywords as $keyword) {
 				$keyword = trim($keyword);
 				if(!empty($keyword)) {
-					if(!isset($out[$keyword])) $count++;
-					$out[$keyword] = $keyword;
+					$count++;
+					$out[] = $keyword;
 				}
 				if($keywords_limit <= $count)
 					return implode(', ',$out);
 			}
+			
 			$content = implode(', ',$out);
 		}
 		return $content;
@@ -122,27 +131,26 @@
 
 	function rah_metas_description($atts) {
 		extract(lAtts(rah_metas_atts(),$atts));
-		global $is_article_list;
+		
+		global $thisarticle;
 		$content = '';
-		if($is_article_list == true)
+
+		if(empty($thisarticle))
 			$content = $description;
+		
 		if(
-			$description_from && 
-			$is_article_list == false
+			!empty($thisarticle) && $description_from
 		) {
-			if(
-				in_array(
-					$description_from,
-					array('excerpt','body')
-				)
-			) 
-				$content = $description_from(array());
-			else 
-				$content = custom_field(array('name' => $description_from,'default' => ''));
+			
+			if(isset($thisarticle[$description_from]))
+				$content = $thisarticle[$description_from];
+			
 			if($prefercontent && !$content) {
-				$content = body(array());
-				if(!$content) $content = excerpt(array());
+				$content = $thisarticle['body'];
+				if(!$content)
+					$content = $thisarticle['excerpt'];
 			}
+			
 			if(!$content && $description_replacement)
 				$content = $description;
 		}
