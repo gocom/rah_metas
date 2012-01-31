@@ -1,34 +1,14 @@
 h1. rah_metas
 
-p. A tiny <abbr title="Search engine optimization">SEO</abbr>- and meta-tool for "Textpattern CMS.":http://www.textpattern.com Build descriptions, simple meta info, rel links and prevent double content.
+p. A tiny meta-generator plugin for "Textpattern CMS":http://www.textpattern.com. Rah_metas auto-generates meta data from article content, including descriptions and keywords.
 
-* Version: 1.5
-* Updated: 2011/10/29 11:20 PM UTC
+h2. List of features
 
-h3. Table of Contents
+* Generates automatic metadescriptions from article's body, excerpt or custom field.
+* Limit and customize the automatic descriptions and keywords by word or character limits.
+* Takes care of content validation. Strips all HTML, invalid characters and extra whitespace.
 
-* "Intro and description":#intro-and-description
-* "List of features":#list-of-features
-* "Requirements":#requirements
-* "Installation and usage":#installation-and-usage
-* "Attributes":#attributes
-* "Examples":#example
-* "Changelog":#changelog
-* "Known issues":#known-issues
-* "Thanks to":#thanks-to
-
-h3(#intro-and-description). Intro and description
-
-p. A Textpattern plugin used for <abbr title="Search engine optimization">SEO</abbr>. The plugin includes basic SEO tools, from semi-automatic metainformation generation to useful redirections that prevent double content as rah_metas is also able redirect requested messy urls to cleans, leaving no space for the double content fault.
-
-h3(#list-of-features). List of features
-
-* *Outputs automatic metadescriptions* from article's body, excerpt or custom field.
-* *Limits and customizes the automatic metadescription* by word or character limit, strips all XHTML and invalid characters.
-* *Redirects messy urls to clean ones, if cleans are in use*. In example, @?id=xx@ and @?s=xx@ would be redirect to the correct place, preventing possible double content.
-* *Outputs other useful meta* as author, description and language.
-
-h3(#requirements). Requirements
+h2. Requirements
 
 p. Minimum requirements:
 
@@ -40,13 +20,13 @@ p. Recommended:
 * PHP 5.1.2+
 * Textpattern 4.4.1+
 
-h3(#installation-and-usage). Installation and usage
+h2. Installation and usage
 
 p. The general behavior stands: paste plugin code to the plugin installer textarea and run the automatic setup. Then just activate the plugin and you are ready to use new tags that plugin includes like others.
 
 p. For usage, basically just put @<txp:rah_metas />@-tag with wanted attributes to inside your site's @<head>@-tags. As the plugin's tag outputs metainformation, and meta-tags, it shouldn't be used outside @<head>@-tags.
 
-h3(#attributes). Attributes
+h2. Attributes
 
 p. The tag is @<txp:rah_metas />@ and attributes for it follow. Default value @""@ means that the attribute is unset and by default not used.
 
@@ -74,7 +54,7 @@ p. *copyright*
 Outputs copyright meta. Value is used as the content.
 Example: @copyright="Copyrihts &copy; 2007 John Doe"@ Default: @""@
 
-h4. Description related attributes
+h3. Description related attributes
 
 p. *description*
 A default meta description that will be shown in list context, or when there isn't an article description to show and @description_replacement@ is set on.
@@ -104,7 +84,7 @@ p. *escape*
 If set to @1@, will remove raw Textile markup from the description. By default the attribute is unset, and the feature is not used. Usually this feature isn't required, but it might be good if you are supplying the description in a custom field and you are using Textile there. Textile in custom fields isn't, by default, parsed by Textpattern.
 Example: @escape="1"@ Default: @""@
 
-h4. Keyword related attributes
+h3. Keyword related attributes
 
 p. *keywords*
 Default keywords that will be used as keyword meta in a list context, or when there isn't any keywords set for an article and @keywords_replacement@ attribute is set on.
@@ -132,7 +112,7 @@ p. *redirect_code*
 The code of redirection, value should be "three numeric stannard status code protocol.":http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
 Example: @redirect_code="302"@ Default: @"301"@
 
-h4. Rel link related attributes
+h3. Rel link related attributes
 
 p. *relnext*
 Use rel link to point next page's location to the browser. @relnext@ attribute's value is used as @<link rel="next" />@ tag's @title@. Ideal values are @Next@, @Go to next@ and so on. The attribute, @relnext@, adds a next rel link meta that points to the next section page or article by posting date. If attribute is used (filled) then used, if unset (empty) then not.
@@ -150,17 +130,17 @@ p. *next_url*
 Manually defines relative next url. Value should be a URL address. The URL is only used if automatic URL isn't found.
 Example: @prev_url="http://www.example.com/path/to/id"@ Default: @""@
 
-h3(#example). Examples
+h2. Examples
 
-p. *#1: Basic usage*
+h3. Basic usage
 
 bc. <txp:rah_metas keywords="dog, cat, house" description="Lorem lipsum" maxchars="170" words="15" />
 
-p. *#2: Using content preferring.* First look at the custom field, then main article (excerpt, body) fields.
+h3. Using content preferring.* First look at the custom field, then main article (excerpt, body) fields.
 
 bc. <txp:rah_metas description_from="MyCustomFieldName,excerpt,body" />
 
-p. *#3: Use rah_metas tag inside "article_custom":http://textpattern.net/wiki/index.php?title=article_custom block*
+h3. Using rah_metas tag inside "article_custom":http://textpattern.net/wiki/index.php?title=article_custom block
 
 p. If rah_metas is placed directly inside article_custom (or article) tag, it can be used to pull the meta data from that specific article.
 
@@ -170,40 +150,40 @@ bc. <txp:article_custom id="5">
 
 In the code above, we took the meta data from the article where the ID is 5.
 
-p. *#4: How to not output description at all, but keep all other features intact?*
+h3. How to not output description at all, but keep all other features intact?
 
 bc. <txp:rah_metas description="" description_from="" />
 
 p. If @description@ and @description_from@ are set empty, no description will be generated. Same applies to keywords (see @keywords@ and @keywords_from@ attributes).
 
-h3(#changelog). Changelog
+h2. Changelog
 
-p. *Version 1.5*
+h3. Version 1.5 - 2011/10/29
 
 * Wrapped set of extra functions into a class, and removed the prefixing from the new methods.
 * Added comments, cleaned up some code.
 * Removed @rah_metas_textile()@ function.
 
-p. *Version 1.4*
+h3. Version 1.4 - 2010/10/19
 
 * Now automatically converts values supplied in @keywords_from@ and @description_from@ to lowercase. "Thank you for reporting, pompilos":http://forum.textpattern.com/viewtopic.php?pid=236051#p236051.
 * Now uses @lAtts()@ just once.
 * Removed dublicated @trim()@ from @rah_metas_strip()@.
 * Removed @rah_metas_atts()@.
 
-p. *Version 1.3*
+h3. Version 1.3 - 2010/05/23
 
 * Now @description_from@ and @keywords_from@ take comma separated list of fields. The first field in the list that isn't empty is used as keywords or description.
 * Removed attribute @prefercontent@. Using the attribute will throw notice in testing or debugging mode.
 
-p. *Version 1.2*
+h3. Version 1.2 - 2010/05/15
 
 * Now the @<txp:rah_metas/>@ tag can be also used _directly inside_ @<txp:article_custom/>@ and @<txp:article/>@ blocks. That means that the tag now works in article lists. You just have to point it to the article. See example number 3.
 * Now _any_ article field can be used in @description_from@ and @keywords_from@ attributes. Even title, authorid, override_form or status.
 * Now dublicate keyword "uniqueing" is done with @array_unique()@.
 * Fixed keywords code escaping.
 
-p. *Version 1.1*
+h3. Version 1.1 - 2009/10/09
 
 * Added: attribute @keywords_limit@.
 * Added: removes doublicated words from keywords.
@@ -214,34 +194,34 @@ p. *Version 1.1*
 * Counts white space into chars.
 * Removed imagetoolbar attribute validation.
 
-p. *Version 1.0.5*
+h3. Version 1.0.5 - 2008/12/25
 
 * Added attribute:  @escape@.
 * Rebuild description's word and chars counting: now always counts correctly: doesn't ever cut words.
 * Optimized parsing and speed: plugin is around 20% faster than before.
 * Removes @&#8230;@ from end of the description if trails are used and description is cut from context and shortened.
 
-p. *Version 1.0.4*
+h3. Version 1.0.4 - 2008/11/12
 
 * Added attribute:  @relnext@.
 * Added attribute: @relprev@.
 * Minified amount of used globals by one.
 
-p. *Version 1.0.3*
+h3. Version 1.0.3 - 2008/08/03
 
 * Fixed last words truncate bug.
 
-p. *Version 1.0.2*
+h3. Version 1.0.2 - 2008/06/17
 
 * Fixed some typos in documention.
 * Now @prefercontent@ also works with custom_fields.
 
-p. *Version 1.0.1*
+h3. Version 1.0.1 - 2008/06/17
 
 * Debugged version 1.0: status now stable.
 * Fixed a bug: now whitespace is stripped from beginning and end of the description content.
 
-p. *Version 1.0*
+h3. Version 1.0 - 2008/06/17
 
 * Improved documentation.
 * Little speed improvement.
@@ -259,62 +239,58 @@ p. *Version 1.0*
 * Removed Textile removing from body and excerpt, that was meant to remove Textile + XHTML bugs caused by user's invalid article code, and used instead body_html, and just stripped HTML: it's faster.
 * Some users wanted to be able input invalid characters to description: now it is possible, if you turn Textile off: why should we validate meta description, if article's body itself is invalid, because writer doesn't use valid HTML special characters.
 
-p. *Version minor 0.9.2*
+h3. Version minor 0.9.2 - 2008/01/07
 
 * One bug fix, created by little one chars typo in the code.
 
-p. *Version minor 0.9.1*
+h3. Version minor 0.9.1 - 2007/12
 
 * Removed a debugging error, caused by undefined variable if there were no description.
 
-p. *Version 0.9*
+h3. Version 0.9 - 2007/12/05
 
 * Added attribute: @copyright@.
 * Added attribute: @useauthor@.
 * Added attribute: @customfieldkeywords@.
 * Added attribute: @customfieldexcerpt@.
 
-p. *Version 0.8*
+h3. Version 0.8 - 2007/11/02
 
 * Added Textile remover: removes Textile completely from description
 * Cleaned up the code
 
-p. *Version 0.7*
+h3. Version 0.7 - 2007/09/08
 
 * Fixed bug that appears if single article has no body or excerpt. Only shown in debugging.
 
-p. *Version 0.6*
+h3. Version 0.6 - 2007/08/26
 
 * Fixed a code-removing bug
 * Now removes all code from automatic metadescription
 
-p. *Version 0.5*
+h3. Version 0.5 - 2007/08
 
 * Finished bug-testing
 
-p. *Version 0.4*
+h3. Version 0.4 - 2007/08
 
 * Add missing variable
 
-p. *Version 0.3*
+h3. Version 0.3 - 2007/08
 
 * Compined two separated functions
 * Improved the code by fixing globals
 
-p. *Version 0.2*
+h3. Version 0.2 - 2007/08
 
 * Replaced automatic-medescription's ending points @&#8230;@ with @&hellip;@
 * Added new attribute: @imagetoolbar@
 
-p. *Version 0.1*
+h3. Version 0.1 - 2007/07/27
 
-* First release
+* Initial release.
 
-h3(#known-issues). Known issues
-
-p. Redirects might not always work on old fast-cgi (requires clarifation), but on other systems fine.
-
-h3(#thanks-to). Thanks to
+h2. Thanks to
 
 * All folks that thanked me by making this plugin available.
 * rolograaf and pat64 for great ideas of keywords.
