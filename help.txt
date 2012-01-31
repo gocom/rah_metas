@@ -2,8 +2,8 @@ h1. rah_metas
 
 p. A tiny <abbr title="Search engine optimization">SEO</abbr>- and meta-tool for "Textpattern CMS.":http://www.textpattern.com Build descriptions, simple meta info, rel links and prevent double content.
 
-* Version: 1.2
-* Updated: 2010/05/15 6:30 PM UTC
+* Version: 1.3
+* Updated: 2010/05/23 9:30 AM UTC
 
 h3. Table of Contents
 
@@ -14,7 +14,6 @@ h3. Table of Contents
 * "Attributes":#attributes
 * "Examples":#example
 * "Changelog":#changelog
-* "Contact":#contact
 * "Known issues":#known-issues
 * "Thanks to":#thanks-to
 
@@ -39,7 +38,7 @@ p. Minimum requirements:
 p. Recommended:
 
 * PHP 5.1.2+
-* Textpattern 4.0.6+
+* Textpattern 4.0.8+
 
 h3(#installation-and-usage). Installation and usage
 
@@ -78,59 +77,55 @@ Example: @copyright="Copyrihts &copy; 2007 John Doe"@ Default: @""@
 h4. Description related attributes
 
 p. *description*
-A default metadescription that will be used as description if an user is browsing an article list, or there isn't any description to show and @description_replacement@ is on.
+A default meta description that will be used in article list context, or if there isn't an article description to show and @description_replacement@ is set on.
 Example: @description="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Fusce at dui eget est congue aliquet. Quisque sed nunc"@ Default: @""@
 
 p. *description_from*
-Which field we use for the automatic metadescription. Available values: @body@, @excerpt@ or @custom field's name@ that is set via Textpattern's preferences. If empty, then automatic description isn't used - only @description@-attribute instead, if it's filled and @description_replament@ is set on.
-Example: @description_from="metadescription"@  Default: @"body"@
-
-p. *description_trail*
-Ending trail and marks used by the automatic metadescription.
-Example: @description_trail=""@ Default:  @"&hellip;"@
+Which field is used for the automatic meta description. The attribute takes comma seperated list of fields. The first field in the list that isn't empty is used as the meta description. Available values: @body@, @excerpt@ or @custom field's name@. If the attribute is empty, then automatic description isn't used.
+Example: @description_from="body,excerpt,metadescription"@  Default: @"body,excerpt"@
 
 p. *words*
-Limits the amount of words that can be used in the automatic metadescription.
+Limits the amount of words that are shown in the automatic meta description.
 Example: @words="15"@ Default: @"25"@
 
 p. *maxchars*
-The maximum number of characters in the generated automatic metadescription.
+The maximum number of characters in the generated automatic meta description.
 Example: @maxchars="170"@ Default: @"250"@
 
-p. *prefercontent*
-Automatic description prefers a filled field over an empty one. If excerpt or body is used for description, and excerpt is left empty, then body is used. Instead if body is empty, then the used one is excerpt. If custom_field is used for description, and @prefercontent@ is used, then description is tried to taken from excerpt and body untill it finds filled field. If @prefercontent@ is empty, this option isn't used, if filled used.
-Example: @prefercontent="1"@ Default: @""@
+p. *description_trail*
+Ending trail used in the end of the automatic metadescription. Trail is only shown if the description is longer than the limit set by @maxchars@ and @words@.
+Example: @description_trail=""@ Default:  @"&hellip;"@
 
 p. *description_replacement*
-If there isn't automatic description available, use @description@-attribute instead, but limit it too in same way as usually.
+If set on (@1@) and there isn't automatic description available, use @description@ attribute instead. By default this feature is not used.
 Example: @description_replacement="1"@ Default: @""@
 
 p. *escape*
-Will escape HTML and Textile, if usign a custom field as a description. If filled, feature will be used. Default unset, not used.
+If set to @1@, will escape raw Textile from description. Default is unset, and the feature is not used. Usually this feature isn't required, but it might be good if you have description in a custom field and you are using Textile there. Textile in custom fields isn't by default genenrated by Textpattern.
 Example: @escape="1"@ Default: @""@
 
 h4. Keyword related attributes
 
 p. *keywords*
-Default keywords that will be used as keyword meta, when an user is browsing an article list, or if there isn't any keywords defined for article and @keywords_replacement@ attribute is on.
+Default keywords that will be used as keyword meta in article list context, or if there isn't any keywords defined for article and @keywords_replacement@ attribute is set on.
 Example: @keywords="life, Doe, cat, dog"@ Default: @""@
 
 p. *keywords_from*
-Which field we use for the keyword-meta. Available values: @keywords@ or @custom field's name@ that is set via Textpattern's preferences. If empty, then isn't used.
-Example: @keywords_from=""@  Default: @"keywords"@
+Which field is used for the keyword meta. The attribute takes comma seperated list of fields. The first field in the list that isn't empty is used as the keywords. Available values, any article field: @keywords@, @body@, @excerpt@ or @custom field's name@. If empty, the feature isn't used.
+Example: @keywords_from="keywords,excerpt"@  Default: @"keywords"@
 
 p. *keywords_replacement*
-If there isn't dynamically pulled keywords available in single article, use @keywords@-attribute instead.
+If there isn't keywords available for an article, use default defined in @keywords@ attribute instead.
 Example: @keywords_replacement="1"@ Default: @""@
 
 p. *keywords_limit*
-Limits the amount of words that can be used in the keywords.
+Limits the words used in the keywords. Takes even number.
 Example: @keywords_limit="5"@ Default: @"25"@
 
 h4. Redirect related attributes
 
 p. *messy_to_clean_redirect*
-Use messy to clean redirect. Use this only if you use clean urls. With messy urls this only causes eternal loop.
+Use messy to clean redirect. Redirects messy requrests to clean urls. Use this only if you use clean urls. With messy urls this only causes eternal loop.
 Example: @messy_to_clean_redirect="1"@ Default: @""@
 
 p. *redirect_code*
@@ -140,11 +135,11 @@ Example: @redirect_code="302"@ Default: @"301"@
 h4. Rel link related attributes
 
 p. *relnext*
-Use rel link to point next page's location to browsers. @relnext@-attribute should be filled with @<link rel="next" />@ tag's @title@ attribute. Ideal values are @Next@, @Go to next@ and so on. The attribute, @relnext@, adds a next rel link meta that points to the next section page or article by posting date. If attribute is used (filled) then used, if unset (empty) then not.
+Use rel link to point next page's location to the browser. @relnext@ attribute's value is used as @<link rel="next" />@ tag's @title@. Ideal values are @Next@, @Go to next@ and so on. The attribute, @relnext@, adds a next rel link meta that points to the next section page or article by posting date. If attribute is used (filled) then used, if unset (empty) then not.
 Example: @relnext="Next"@ Default: @""@
 
 p. *relprev*
-Use rel link to point previous page's location to browsers. @relprev@-attribute should be filled with @<link rel="prev" />@ tag's @title@ attribute. Ideal values are @Previous@, @Go to prev@ and so on. The attribute, @relprev@, adds a next rel link meta that points to the previous section page or article by posting date. If attribute is used (filled) then used, if unset (empty) then not.
+Use rel link to point previous page's location to the browser. @relprev@ attribute's value is used as @<link rel="prev" />@ tag's @title@. Ideal values are @Previous@, @Go to prev@ and so on. The attribute, @relprev@, adds a next rel link meta that points to the previous section page or article by posting date. If attribute is used (filled) then used, if unset (empty) then not.
 Example: @relprev="Previous"@ Default: @""@
 
 p. *prev_url*
@@ -176,6 +171,11 @@ bc. <txp:article_custom id="5">
 In the code above, we took the meta data from the article where the ID is 5.
 
 h3(#changelog). Changelog
+
+p. *Version 1.3*
+
+* Now @description_from@ and @keywords_from@ take comma seperated list of fields. The first field in the list that isn't empty is used as keywords or description.
+* Removed attribute @prefercontent@. Using the attribute will throw notice in testing or debugging mode.
 
 p. *Version 1.2*
 
@@ -291,11 +291,6 @@ p. *Version 0.1*
 
 * First release
 
-h3(#contact). Contact
-
-* Plugin by "Jukka Svahn":http://www.rahinaa.biz
-* "Forum thread":http://forum.textpattern.com/viewtopic.php?id=27506
-
 h3(#known-issues). Known issues
 
 p. Redirects might not always work on old fast-cgi (requires clarifation), but on other systems fine.
@@ -305,5 +300,5 @@ h3(#thanks-to). Thanks to
 * All folks that thanked me by making this plugin available.
 * rolograaf and pat64 for great ideas of keywords.
 * fuls, strawberryfusion, jim_01 and ian_ep for reporting me some bugs.
-* maniqui for the idea of custom field.
+* maniqui for the ideas.
 * And all the other great Textpatternists.

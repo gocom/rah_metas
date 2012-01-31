@@ -1,7 +1,7 @@
 <?php	##################
 	#
 	#	rah_metas-plugin for Textpattern
-	#	version 1.2
+	#	version 1.3
 	#	by Jukka Svahn
 	#	http://rahforum.biz
 	#
@@ -29,14 +29,12 @@
 			$out[] = '<meta http-equiv="imagetoolbar" content="'.$imagetoolbar.'" />';
 		if($language)
 			$out[] = '<meta http-equiv="content-language" content="'.$language.'" />';
-		
 		if($copyright) 
 			$out[] = '<meta name="copyright" content="'.$copyright.'" />';
 		if($robots) 
 			$out[] = '<meta name="robots" content="'.$robots.'" />';
 		if($author)
 			$out[] = '<meta name="author" content="'.$author.'" />';
-		
 		if($keywords) 
 			$out[] = '<meta name="keywords" content="'.$keywords.'" />';
 		if($description)
@@ -65,12 +63,11 @@
 				'keywords_replacement' => '',
 				'keywords_limit' => '25',
 				'description' => '',
-				'description_from' => 'body',
+				'description_from' => 'body,excerpt',
 				'description_trail' => '&hellip;',
 				'escape' => '',
 				'maxchars' => '250',
 				'words' => '25',
-				'prefercontent' => '',
 				'description_replacement' => '',
 				'author' => '',
 				'useauthor' => '',
@@ -90,24 +87,15 @@
 	function rah_metas_keywords($atts) {
 		extract(lAtts(rah_metas_atts(),$atts));
 		
-		global $thisarticle;
-		
-		$content = '';
 		$out = array();
 		$count = 0;
 		
-		if(empty($thisarticle))
-			$content = $keywords;
-
-		if(
-			!empty($thisarticle) && $keywords_from
-		) {
-			if(isset($thisarticle[$keywords_from]))
-				$content = $thisarticle[$keywords_from];
-			
-			if(!$content && $keywords_replacement) 
-				$content = $keywords;
-		}
+		$content = 
+			rah_metas_content(
+				$keywords_from,
+				$keywords_replacement,
+				$keywords
+			);
 		
 		if($content) {
 			$content = rah_metas_strip($content);
@@ -131,29 +119,14 @@
 
 	function rah_metas_description($atts) {
 		extract(lAtts(rah_metas_atts(),$atts));
-		
-		global $thisarticle;
-		$content = '';
 
-		if(empty($thisarticle))
-			$content = $description;
+		$content = 
+			rah_metas_content(
+				$description_from,
+				$description_replacement,
+				$description
+			);
 		
-		if(
-			!empty($thisarticle) && $description_from
-		) {
-			
-			if(isset($thisarticle[$description_from]))
-				$content = $thisarticle[$description_from];
-			
-			if($prefercontent && !$content) {
-				$content = $thisarticle['body'];
-				if(!$content)
-					$content = $thisarticle['excerpt'];
-			}
-			
-			if(!$content && $description_replacement)
-				$content = $description;
-		}
 		if($content) {
 			if($escape) 
 				$content = rah_metas_textile($content);
@@ -164,7 +137,8 @@
 			$tokens = explode(' ',$content);
 			foreach($tokens as $token) {
 				$token = trim($token);
-				if(empty($token)) continue;
+				if(empty($token))
+					continue;
 				if($count_char <= $maxchars && $count_word <= $words)
 					$word[] = $token;
 				else 
@@ -175,6 +149,26 @@
 			$content = implode(' ',$word);
 		}
 		return $content;
+	}
+
+	function rah_metas_content($string='',$replacement='',$default='') {
+		
+		global $thisarticle;
+		
+		if(empty($thisarticle))
+			return $default;
+		
+		$array = 
+			explode(',',$string);
+		
+		foreach($array as $field) {
+			$field = trim($field);
+			if(!empty($field) && isset($thisarticle[$field]) && !empty($thisarticle[$field]))
+				return $thisarticle[$field];
+		}
+		
+		if($replacement)
+			return $default;
 	}
 
 	function rah_metas_trail($out=array()) {
@@ -188,13 +182,13 @@
 
 	function rah_metas_strip($out='') {
 		return 
-			str_replace(
-				array("\n","\t",'"','>','<'),
-				array(' ','','&quot;','&gt;','&lt;'),
-				trim(
+			trim(
+				str_replace(
+					array("\n","\t",'"','>','<'),
+					array(' ','','&quot;','&gt;','&lt;'),
 					strip_tags(
-						parse(
-							$out
+						trim(
+							parse($out)
 						)
 					)
 				)
