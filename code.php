@@ -1,16 +1,46 @@
 <?php	##################
 	#
 	#	rah_metas-plugin for Textpattern
-	#	version 1.3
+	#	version 1.4
 	#	by Jukka Svahn
 	#	http://rahforum.biz
 	#
 	###################
 
 	function rah_metas($atts=array()) {
-		extract(lAtts(rah_metas_atts(),$atts));
-
+		
 		global $is_article_list,$thisarticle;
+		
+		$atts = 
+			lAtts(array(
+				'keywords' => '',
+				'keywords_from' => 'keywords',
+				'keywords_replacement' => '',
+				'keywords_limit' => '25',
+				'description' => '',
+				'description_from' => 'body,excerpt',
+				'description_trail' => '&hellip;',
+				'description_replacement' => '',
+				'escape' => '',
+				'maxchars' => '250',
+				'words' => '25',
+				'author' => '',
+				'useauthor' => '',
+				'robots' => '',
+				'imagetoolbar' => '',
+				'copyright' => '',
+				'language' => '',
+				'messy_to_clean_redirect' => '',
+				'redirect_code' => '301',
+				'relnext' => '',
+				'relprev' => '',
+				'prev_url' => '',
+				'next_url' => '',
+			),$atts)
+		;
+
+		extract($atts);
+		
 		$out = array();
 		
 		$author = ($useauthor && !empty($thisarticle)) ? author(array()) : $author;
@@ -18,11 +48,15 @@
 		$keywords = rah_metas_keywords($atts);
 		
 		if($is_article_list == true) {
-			if($relprev) $prev_url = older(array(),false);
-			if($relnext) $next_url = newer(array(),false);
+			if($relprev)
+				$prev_url = older(array(),false);
+			if($relnext)
+				$next_url = newer(array(),false);
 		} else {
-			if($relprev) $prev_url = link_to_prev(array(),false);
-			if($relnext) $next_url = link_to_next(array(),false);
+			if($relprev)
+				$prev_url = link_to_prev(array(),false);
+			if($relnext)
+				$next_url = link_to_next(array(),false);
 		}
 		
 		if($imagetoolbar)
@@ -47,45 +81,19 @@
 		if($messy_to_clean_redirect) {
 			if(gps('s')) 
 				header('Location: '.pagelinkurl(array('s' => gps('s'))),TRUE,$redirect_code);
-			if(is_numeric(gps('id'))) 
+			elseif(is_numeric(gps('id'))) 
 				header('Location: '.permlink(array('id' => gps('id'))),TRUE,$redirect_code);
 		}
 		
 		return implode(n,$out);
 	}
 
-	function rah_metas_atts() {
-		return 
-			array(
-				'language' => '',
-				'keywords' => '',
-				'keywords_from' => 'keywords',
-				'keywords_replacement' => '',
-				'keywords_limit' => '25',
-				'description' => '',
-				'description_from' => 'body,excerpt',
-				'description_trail' => '&hellip;',
-				'escape' => '',
-				'maxchars' => '250',
-				'words' => '25',
-				'description_replacement' => '',
-				'author' => '',
-				'useauthor' => '',
-				'robots' => '',
-				'imagetoolbar' => '',
-				'copyright' => '',
-				'messy_to_clean_redirect' => '',
-				'redirect_code' => '301',
-				'relnext' => '',
-				'relprev' => '',
-				'prev_url' => '',
-				'next_url' => '',
-			)
-		;
-	}
+/**
+	Builds keywords
+*/
 
 	function rah_metas_keywords($atts) {
-		extract(lAtts(rah_metas_atts(),$atts));
+		extract($atts);
 		
 		$out = array();
 		$count = 0;
@@ -117,8 +125,12 @@
 		return $content;
 	}
 
+/**
+	Builds description
+*/
+
 	function rah_metas_description($atts) {
-		extract(lAtts(rah_metas_atts(),$atts));
+		extract($atts);
 
 		$content = 
 			rah_metas_content(
@@ -151,12 +163,17 @@
 		return $content;
 	}
 
-	function rah_metas_content($string='',$replacement='',$default='') {
-		
+/**
+	Gets the content from @$thisarticle
+*/
+
+	function rah_metas_content($string,$replacement,$default) {
 		global $thisarticle;
 		
-		if(empty($thisarticle))
+		if(empty($thisarticle) || empty($string))
 			return $default;
+		
+		$string = strtolower($string);
 		
 		$array = 
 			explode(',',$string);
@@ -171,7 +188,11 @@
 			return $default;
 	}
 
-	function rah_metas_trail($out=array()) {
+/**
+	Removes trail (&#8230;) from the end of the string
+*/
+
+	function rah_metas_trail($out) {
 		$content = implode(' ',$out);
 		if(
 			substr($content, -7, 7) == '&#8230;'
@@ -180,24 +201,30 @@
 		return $content;
 	}
 
-	function rah_metas_strip($out='') {
+/**
+	Parses TXP markup, and strips valid HTML, invalid code, exceeding whitespace and line breaks.
+*/
+
+	function rah_metas_strip($out) {
 		return 
 			trim(
 				str_replace(
-					array("\n","\t",'"','>','<'),
-					array(' ','','&quot;','&gt;','&lt;'),
+					array("\n","\r","\t",'"','>','<'),
+					array(' ',' ',' ','&quot;','&gt;','&lt;'),
 					strip_tags(
-						trim(
-							parse($out)
-						)
+						parse($out)
 					)
 				)
 			)
 		;
 	}
 
-	function rah_metas_textile($out='') {
+/**
+	Textiles
+*/
+
+	function rah_metas_textile($out) {
 		@include_once(txpath.'/lib/classTextile.php');
 		$textile = new Textile();
 		return $textile->TextileThis($out);
-	}?>
+	}

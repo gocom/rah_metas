@@ -2,8 +2,8 @@ h1. rah_metas
 
 p. A tiny <abbr title="Search engine optimization">SEO</abbr>- and meta-tool for "Textpattern CMS.":http://www.textpattern.com Build descriptions, simple meta info, rel links and prevent double content.
 
-* Version: 1.3
-* Updated: 2010/05/23 9:30 AM UTC
+* Version: 1.4
+* Updated: 2010/10/19 5:00 AM UTC
 
 h3. Table of Contents
 
@@ -81,7 +81,7 @@ A default meta description that will be used in article list context, or if ther
 Example: @description="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Fusce at dui eget est congue aliquet. Quisque sed nunc"@ Default: @""@
 
 p. *description_from*
-Which field is used for the automatic meta description. The attribute takes comma seperated list of fields. The first field in the list that isn't empty is used as the meta description. Available values: @body@, @excerpt@ or @custom field's name@. If the attribute is empty, then automatic description isn't used.
+Which field is used for the automatic meta description. The attribute takes comma separated list of fields. The first field in the list that isn't empty is used as the meta description. Available values: @body@, @excerpt@ or @custom field's name@. If the attribute is empty, then automatic description isn't used.
 Example: @description_from="body,excerpt,metadescription"@  Default: @"body,excerpt"@
 
 p. *words*
@@ -111,7 +111,7 @@ Default keywords that will be used as keyword meta in article list context, or i
 Example: @keywords="life, Doe, cat, dog"@ Default: @""@
 
 p. *keywords_from*
-Which field is used for the keyword meta. The attribute takes comma seperated list of fields. The first field in the list that isn't empty is used as the keywords. Available values, any article field: @keywords@, @body@, @excerpt@ or @custom field's name@. If empty, the feature isn't used.
+Which field is used for the keyword meta. The attribute takes comma separated list of fields. The first field in the list that isn't empty is used as the keywords. Available values, any article field: @keywords@, @body@, @excerpt@ or @custom field's name@. If empty, the feature isn't used.
 Example: @keywords_from="keywords,excerpt"@  Default: @"keywords"@
 
 p. *keywords_replacement*
@@ -158,11 +158,11 @@ bc. <txp:rah_metas keywords="dog, cat, house" description="Lorem lipsum" maxchar
 
 p. *#2: Using content preferring.* First look at the custom field, then main (excerpt, body) fields.
 
-bc. <txp:rah_metas description_from="MyCustomFieldName" prefercontent="1" />
+bc. <txp:rah_metas description_from="MyCustomFieldName,excerpt,body" />
 
 p. *#3: Use rah_metas tag inside "article_custom":http://textpattern.net/wiki/index.php?title=article_custom block*
 
-p. If rah_metas is placed directly inside article_custom (or article) tag, it can be used to pull the meta data from specific article.
+p. If rah_metas is placed directly inside article_custom (or article) tag, it can be used to pull the meta data from that specific article.
 
 bc. <txp:article_custom id="5">
 	<txp:rah_metas />
@@ -170,11 +170,24 @@ bc. <txp:article_custom id="5">
 
 In the code above, we took the meta data from the article where the ID is 5.
 
+p. *#4: How to not output description at all, but keep all other features intact?*
+
+bc. <txp:rah_metas description="" description_from="" />
+
+p. If @description@ and @description_from@ are set empty, no description will be generated. Same applies to keywords (see @keywords@ and @keywords_from@ attributes).
+
 h3(#changelog). Changelog
+
+p. *Version 1.4*
+
+* Now automatically converts values supplied in @keywords_from@ and @description_from@ to lowercase. "Thank you for reporting, pompilos":http://forum.textpattern.com/viewtopic.php?pid=236051#p236051.
+* Now uses @lAtts()@ just once.
+* Removed dublicated @trim()@ from @rah_metas_strip()@.
+* Removed @rah_metas_atts()@.
 
 p. *Version 1.3*
 
-* Now @description_from@ and @keywords_from@ take comma seperated list of fields. The first field in the list that isn't empty is used as keywords or description.
+* Now @description_from@ and @keywords_from@ take comma separated list of fields. The first field in the list that isn't empty is used as keywords or description.
 * Removed attribute @prefercontent@. Using the attribute will throw notice in testing or debugging mode.
 
 p. *Version 1.2*
@@ -279,7 +292,7 @@ p. *Version 0.4*
 
 p. *Version 0.3*
 
-* Compined two seperated functions
+* Compined two separated functions
 * Improved the code by fixing globals
 
 p. *Version 0.2*
@@ -299,6 +312,6 @@ h3(#thanks-to). Thanks to
 
 * All folks that thanked me by making this plugin available.
 * rolograaf and pat64 for great ideas of keywords.
-* fuls, strawberryfusion, jim_01 and ian_ep for reporting me some bugs.
+* fuls, strawberryfusion, jim_01, pompilos and ian_ep for reporting me some bugs.
 * maniqui for the ideas.
 * And all the other great Textpatternists.
